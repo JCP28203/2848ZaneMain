@@ -20,10 +20,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.TestTurret;
-import frc.robot.subsystems.FlyWheel;
-import frc.robot.subsystems.Transition;
 import lombok.Getter;
-import frc.robot.subsystems.TestTurret;
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
@@ -43,9 +40,6 @@ public class RobotContainer {
     //@Getter public static final Shooter shooter = new Shooter();
     @Getter public static final NewVision vision = new NewVision();
     @Getter public static final TestTurret turret = new TestTurret();
-
-    @Getter public static final FlyWheel flywheel = new FlyWheel();
-    @Getter public static final Transition transition = new Transition();
 
     
     public RobotContainer() {
