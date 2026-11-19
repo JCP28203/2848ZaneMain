@@ -24,7 +24,6 @@ import lombok.Getter;
 public class RobotContainer {
     private double MaxSpeed = 1.0 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
     private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
-    
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
             .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -35,6 +34,7 @@ public class RobotContainer {
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
+    
 
     @Getter public static final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     //@Getter public static final Shooter shooter = new Shooter();
@@ -88,14 +88,7 @@ public class RobotContainer {
 
 
         drivetrain.registerTelemetry(logger::telemeterize);
-        
-        joystick.povUp().onTrue(turret.goToDeg(0));
-        joystick.povLeft().onTrue(turret.goToDeg(45));
-        joystick.povRight().onTrue(turret.goToDeg(-45));
-        joystick.povDown().onTrue(turret.goToDeg(5));
-
-        flywheel.setDefaultCommand(Commands.idle(flywheel));
-
+       
     }
 
     public Command getAutonomousCommand() {

@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.AnalogAccelerometer;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.LimelightHelpers.PoseEstimate;
 import lombok.Getter;
@@ -26,9 +27,12 @@ public class PoseEstHolder {
     @Getter RollingAverage fpsRoller = new RollingAverage(1);
     @Getter RollingAverage ambiguityRoller = new RollingAverage(1);
 
+    
+
 
     public PoseEstHolder(String name){
      this.cameraName = name;
+     
     }
 
     public boolean hasTag(){
