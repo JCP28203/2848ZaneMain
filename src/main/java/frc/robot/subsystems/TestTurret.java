@@ -10,13 +10,16 @@ import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.mechanisms.swerve.LegacySwerveModule.ClosedLoopOutputType;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 
@@ -38,6 +41,7 @@ public class TestTurret extends SubsystemBase{
     private double currentAngleOfRobot;
     private double kP;
     private double motorOutput;
+    private double angleError;
 
 //Soft Limit so Turret cant go past certain degree values
 
@@ -45,13 +49,13 @@ public class TestTurret extends SubsystemBase{
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
         config.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
-        config.Slot0.kP = 10;
+        config.Slot0.kP = 30;
         config.Slot0.kI = 0;
         config.Slot0.kD = 0;
         config.Slot0.kA = 0;
         config.Slot0.kV = .12;
         config.Slot0.kS = 0;
-        
+        this.kP = 30;
         config.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         CANcoderConfiguration Canconfig = new CANcoderConfiguration();
         Canconfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
@@ -69,22 +73,41 @@ public class TestTurret extends SubsystemBase{
    @Override
  public void periodic(){
     vectorOfRobot = RobotContainer.getDrivetrain().getState().Pose.getTranslation();
+    VectorToHub = redHubPose.minus(vectorOfRobot);
     currentAngleOfRobot = RobotContainer.getDrivetrain().getState().Pose.getRotation().getRadians();
         //m_encoder.getAbsolutePosition().getValueAsDouble() * Math.PI;
         //MathUtil.angleModulus(robotToHub.getAngle().getRadians());
         //MathUtil.angleModulus(x-y);
         //1.Find a vector position of the robot in relation to the target, correct robot position to always be at the target
         //redHubPose.get
-        VectorToHub = redHubPose.minus(vectorOfRobot);
-        double angleError = getAngleToHub() - currentAngleOfRobot;
+
+
+        //offset = -.37
         
-        motorOutput = kP * angleError;
+         angleError = MathUtil.angleModulus(getAngleToHub()) - MathUtil.angleModulus(currentAngleOfRobot);
+        
+        motorOutput = this.kP * angleError;
         if(motorOutput > 100)
          motorOutput = 100;
         if (motorOutput < -100)
         motorOutput = -100;
 
         m_turret.set(motorOutput);
+          
+        SmartDashboard.putData(field);
+        SmartDashboard.putData(this);
+
+
+    }
+    @Override
+    public void initSendable(SendableBuilder builder){
+        super.initSendable(builder);
+
+        builder.addDoubleProperty("AngleToHub",() -> VectorToHub.getAngle().getRadians(),null);
+        builder.addDoubleProperty("Angle ERROR", () -> angleError, null);
+        builder.addDoubleProperty("MotorOutput", () -> motorOutput, null);
+        builder.addDoubleProperty("Current Position of Turret",()->m_encoder.getAbsolutePosition().getValueAsDouble() * Math.PI, null);
+        builder.addDoubleProperty("Current Angle of Turret", ()->currentAngleOfRobot,null);
 
     }
 
@@ -92,5 +115,3 @@ public class TestTurret extends SubsystemBase{
 
     
 }
-
-
